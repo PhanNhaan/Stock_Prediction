@@ -50,26 +50,35 @@ kafka_server = 'localhost:9092'
 producer = KafkaProducer(bootstrap_servers=kafka_server,value_serializer = lambda x:dumps(x).encode('utf-8'))
 import model
 
+old =0
+new =0
+
 for x in range(0, 300):
     try:
         result1 = spark.sql(f"SELECT * from {query1.name}")
         if (len(result1.toPandas()) !=0):
-          df_pre = model.predict(result1)
+          new = len(result1.toPandas())
+          if (new > old):
+            df_pre = model.predict(result1)
 
-          jsonDF = df_pre.withColumn("value", to_json(struct(columns)))
+            jsonDF = df_pre.withColumn("value", to_json(struct(columns)))
 
-          print(jsonDF.select(f.col("value")).toPandas().values[-1][0])
+            # print(jsonDF.select(f.col("value")).toPandas().values[-1][0])
 
-          # producer.send(topic_name, value= loads(jsonDF.select(f.col("value")).toPandas().values[0][0]))
+            for i in range(new-old):
+               print(jsonDF.select(f.col("value")).toPandas().values[(old - new)+i][0])
+               producer.send(topic_name, value= loads(jsonDF.select(f.col("value")).toPandas().values[(old - new)+i][0]))
 
-          if (len(jsonDF.select(f.col("value")).toPandas()) == 1):
-              producer.send(topic_name, value= loads(jsonDF.select(f.col("value")).toPandas().values[0][0]))
-          else:
-              producer.send(topic_name, value= loads(jsonDF.select(f.col("value")).toPandas().values[-2][0]))
-              producer.send(topic_name, value= loads(jsonDF.select(f.col("value")).toPandas().values[-1][0]))
+            old = new
 
-          sleep(5)
-          clear_output(wait=True)
+            # if (len(jsonDF.select(f.col("value")).toPandas()) == 1):
+            #     producer.send(topic_name, value= loads(jsonDF.select(f.col("value")).toPandas().values[0][0]))
+            # else:
+            #     producer.send(topic_name, value= loads(jsonDF.select(f.col("value")).toPandas().values[-2][0]))
+            #     producer.send(topic_name, value= loads(jsonDF.select(f.col("value")).toPandas().values[-1][0]))
+
+            sleep(5)
+            clear_output(wait=True)
     except KeyboardInterrupt:
         print("break")
         break

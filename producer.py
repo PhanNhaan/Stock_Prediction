@@ -16,7 +16,7 @@ df['time'] = pd.to_datetime(df['time'])
 df = df.sort_values(by="time",ascending=True)
 df['time'] = df['time'].dt.strftime("%Y-%m-%d")
 
-# sleep(15)
+sleep(20)
 
 seed(1)
     
