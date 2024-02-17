@@ -3,7 +3,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 from io import BytesIO
 import base64
+from flask import Flask, render_template, jsonify
+import numpy as np
+import matplotlib.pyplot as plt
+from io import BytesIO
+import base64
 import time
+from pymongo import MongoClient
 from pymongo import MongoClient
 
 app = Flask(__name__)

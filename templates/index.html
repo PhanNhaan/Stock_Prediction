@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Stock Market Interface</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <title>Stock Market Interface</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
     <div class="container">
@@ -16,6 +18,14 @@
         </div>
     </div>
     <script>
+        function updatePlot() {
+            $.get("/update_plot", function(data) {
+                $("#plot-container").html('<img src="data:image/png;base64,' + data + '">');
+            });
+        }
+        $(document).ready(function() {
+            setInterval(updatePlot, 1000);
+        });
         function updatePlot() {
             $.get("/update_plot", function(data) {
                 $("#plot-container").html('<img src="data:image/png;base64,' + data + '">');
